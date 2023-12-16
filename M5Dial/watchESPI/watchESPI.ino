@@ -1,5 +1,33 @@
+#include <M5AtomDisplay.h>
+#include <M5UnitLCD.h>
+#include <M5UnitRCA.h>
+#include <M5ModuleRCA.h>
+#include <M5UnitMiniOLED.h>
+#include <M5UnitOLED.h>
+#include <M5UnitGLASS.h>
+#include <M5UnitGLASS2.h>
+#include <M5GFX.h>
+#include <M5ModuleDisplay.h>
+
+#include <gitTagVersion.h>
+#include <M5Unified.h>
+
+#include <M5Dial.h>
+
+#include <SPIFFS.h>
+
+#include <vfs_api.h>
+#include <FS.h>
+#include <FSImpl.h>
+
 #include "driver/temp_sensor.h"
-#include "M5Dial.h"
+//#include "M5Dial.h"
+//#include "M5Unified.h"
+//#include "M5GFX.h"
+//#include "MFRC522.h"
+#include "Wire.h"
+#include <SPI.h>
+ 
 M5Canvas img(&M5Dial.Display);
 
 #include <TFT_eSPI.h>
@@ -47,11 +75,11 @@ bool onOff=0;
 String h="23";
 String m="24";
 String s="48";
-String d1="0";
-String d2="1";
+String d1="1";
+String d2="4";
 
-String m1="2";
-String m2="3";
+String m1="1";
+String m2="2";
 
 int lastAngle=0;
 float circle=100;
@@ -65,7 +93,7 @@ void setup() {
    auto cfg = M5.config();
     M5Dial.begin(cfg, true, true);
 
-    M5Dial.Rtc.setDateTime( { { 2023, 10, 25 }, { 15, 56, 56 } } );
+    M5Dial.Rtc.setDateTime( { { 2023, 12, 15 }, { 17, 51, 56 } } );
     sprite.createSprite(240,240);
    
     sprite.setSwapBytes(true);    
@@ -115,7 +143,8 @@ auto dt = M5Dial.Rtc.getDateTime();
  angle=dt.time.seconds*6; 
 
 if(dt.time.seconds<10) s="0"+String(dt.time.seconds); else s=String(dt.time.seconds);
-
+if(dt.time.hours<10) h="0"+String(dt.time.hours); else h=String(dt.time.hours);
+if(dt.time.minutes<10) m="0"+String(dt.time.minutes); else m=String(dt.time.minutes);
   
   if(angle>=360)
   angle=0;
@@ -152,7 +181,7 @@ sprite.setTextColor(TFT_WHITE,color5);
  
 //sprite.drawString(days[now.dayOfTheWeek()],circle,120,2);
 sprite.loadFont(secFont);
-sprite.setTextColor(grays[1],TFT_BLACK);
+sprite.setTextColor(0x35D7,TFT_BLACK);
 sprite.drawString(s,sx,sy-42);
 sprite.unloadFont();
 
@@ -178,21 +207,21 @@ sprite.loadFont(smallFont);
 
 
    sprite.loadFont(bigFont);
-   sprite.setTextColor(grays[0],TFT_BLACK);
+   sprite.setTextColor(0x35D7,TFT_BLACK);
    sprite.drawString(h+":"+m,sx,sy+32);
    sprite.unloadFont();
 
    sprite.loadFont(Noto);
    sprite.setTextColor(0xA380,TFT_BLACK);
-   sprite.drawString("VOLOS",120,190);
+   sprite.drawString("SPACETRUCKER",120,180);
    sprite.drawString("***",120,114);
    sprite.setTextColor(grays[3],TFT_BLACK);
  
   for(int i=0;i<60;i++)
   if(startP[i]+angle<360)
- sprite.fillSmoothCircle(px[startP[i]+angle],py[startP[i]+angle],1,grays[4],TFT_BLACK);
+ sprite.fillSmoothCircle(px[startP[i]+angle],py[startP[i]+angle],1,0x35D7,TFT_BLACK);
  else
- sprite.fillSmoothCircle(px[(startP[i]+angle)-360],py[(startP[i]+angle)-360],1,grays[4],TFT_BLACK);
+ sprite.fillSmoothCircle(px[(startP[i]+angle)-360],py[(startP[i]+angle)-360],1,0x35D7,TFT_BLACK);
 
   for(int i=0;i<12;i++)
  if(start[i]+angle<360){
@@ -202,11 +231,11 @@ sprite.loadFont(smallFont);
  else
  {
  sprite.drawString(cc[i],x[(start[i]+angle)-360],y[(start[i]+angle)-360]);
- sprite.drawWedgeLine(px[(start[i]+angle)-360],py[(start[i]+angle)-360],lx[(start[i]+angle)-360],ly[(start[i]+angle)-360],2,2,grays[3],TFT_BLACK);
+ sprite.drawWedgeLine(px[(start[i]+angle)-360],py[(start[i]+angle)-360],lx[(start[i]+angle)-360],ly[(start[i]+angle)-360],2,2,0x35D7,TFT_BLACK);
  }
  
    sprite.drawWedgeLine(sx-1,sy-82,sx-1,sy-70,1,5,0xA380,TFT_BLACK);
-   sprite.fillSmoothCircle(px[rAngle],py[rAngle],4,TFT_RED,TFT_BLACK);
+   sprite.fillSmoothCircle(px[rAngle],py[rAngle],4,0x35D7,TFT_BLACK);
    M5Dial.Display.pushImage(0,0,240,240,(uint16_t*)sprite.getPointer());
    sprite.unloadFont();
  
